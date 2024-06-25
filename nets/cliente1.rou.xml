@@ -1,0 +1,4 @@
+<routes>
+    <flow id="flow_1" from="v11" to="E0" begin="0" end="100000" probability="0.15" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_2" from="E1" to="h12" begin="0" end="100000" probability="0.15" departSpeed="max" departPos="base" departLane="best"/>
+</routes>

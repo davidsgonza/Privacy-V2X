@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-06-23 15:38:41 by Eclipse SUMO netedit Version v1_19_0+0016-8f48a0f57b6
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="cliente3.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="cliente3.net.xml"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.50"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<net version="1.16" junctionCornerDetail="5" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <location netOffset="-721100.85,320892.53" convBoundary="657.91,263.73,865.34,484.55" origBoundary="-79.010900,-2.901422,-78.996765,-2.895193" projParameter="+proj=utm +zone=17 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
+
+    <type id="highway.residential" priority="3" numLanes="1" speed="13.89" disallow="tram rail_urban rail rail_electric rail_fast ship" oneway="0"/>
+
+    <edge id=":s4_0" function="internal">
+        <lane id=":s4_0_0" index="0" speed="7.79" length="13.90" shape="751.74,365.06 752.87,368.74 754.89,371.11 757.82,372.18 761.64,371.94"/>
+    </edge>
+    <edge id=":s4_1" function="internal">
+        <lane id=":s4_1_0" index="0" speed="13.89" length="14.56" shape="751.74,365.06 752.73,368.26 754.26,371.01 755.91,374.18 757.25,378.64"/>
+        <lane id=":s4_1_1" index="1" speed="13.89" length="14.56" shape="751.74,365.06 754.11,379.25"/>
+    </edge>
+    <edge id=":s4_3" function="internal">
+        <lane id=":s4_3_0" index="0" speed="13.89" length="15.12" shape="746.63,372.10 751.33,371.36 755.00,371.64 758.24,372.11 761.64,371.94"/>
+    </edge>
+    <edge id=":s4_4" function="internal">
+        <lane id=":s4_4_0" index="0" speed="7.86" length="14.52" shape="746.63,372.10 750.62,371.57 753.72,372.48 755.93,374.84 757.25,378.64"/>
+        <lane id=":s4_4_1" index="1" speed="7.17" length="11.88" shape="746.63,372.10 749.26,371.93 751.39,373.07 753.01,375.51 754.11,379.25"/>
+    </edge>
+    <edge id=":s4_6" function="internal">
+        <lane id=":s4_6_0" index="0" speed="13.89" length="14.51" shape="747.50,375.18 761.64,371.94"/>
+    </edge>
+    <edge id=":s4_7" function="internal">
+        <lane id=":s4_7_0" index="0" speed="7.17" length="11.88" shape="747.50,375.18 751.34,374.48 754.24,374.83 756.22,376.21 757.25,378.64"/>
+        <lane id=":s4_7_1" index="1" speed="6.33" length="9.04" shape="747.50,375.18 749.98,374.85 751.91,375.42 753.29,376.88 754.11,379.25"/>
+    </edge>
+
+    <edge id="E3" from="s3" to="s4" priority="-1">
+        <lane id="E3_0" index="0" speed="13.89" length="93.54" shape="656.61,397.50 746.63,372.10"/>
+        <lane id="E3_1" index="1" speed="13.89" length="93.54" shape="657.48,400.58 747.50,375.18"/>
+    </edge>
+    <edge id="E4" from="s4" to="s1" priority="-1">
+        <lane id="E4_0" index="0" speed="13.89" length="106.96" shape="757.25,378.64 777.65,483.63"/>
+        <lane id="E4_1" index="1" speed="13.89" length="106.96" shape="754.11,379.25 774.51,484.24"/>
+    </edge>
+    <edge id="h22" from="s4" to="524356232" priority="-1">
+        <lane id="h22_0" index="0" speed="13.89" length="105.60" shape="761.64,371.94 865.01,350.41"/>
+    </edge>
+    <edge id="v21" from="2496228911" to="s4" priority="-1">
+        <lane id="v21_0" index="0" speed="13.89" length="102.83" shape="735.79,263.48 751.74,365.06"/>
+    </edge>
+
+    <tlLogic id="s4" type="static" programID="0" offset="0">
+        <phase duration="42" state="GGGrrrrrr"/>
+        <phase duration="3"  state="yyyrrrrrr"/>
+        <phase duration="42" state="rrrgggGGG"/>
+        <phase duration="3"  state="rrryyyyyy"/>
+    </tlLogic>
+
+    <junction id="2496228911" type="dead_end" x="734.21" y="263.73" incLanes="" intLanes="" shape="734.21,263.73 737.37,263.23"/>
+    <junction id="524356232" type="dead_end" x="865.34" y="351.98" incLanes="h22_0" intLanes="" shape="864.69,348.85 865.34,351.98"/>
+    <junction id="s1" type="dead_end" x="772.94" y="484.55" incLanes="E4_0 E4_1" intLanes="" shape="779.22,483.33 772.94,484.55"/>
+    <junction id="s3" type="dead_end" x="657.91" y="402.12" incLanes="" intLanes="" shape="657.91,402.12 656.17,395.96"/>
+    <junction id="s4" type="traffic_light" x="751.78" y="375.63" incLanes="v21_0 E3_0 E3_1" intLanes=":s4_0_0 :s4_1_0 :s4_1_1 :s4_3_0 :s4_4_0 :s4_4_1 :s4_6_0 :s4_7_0 :s4_7_1" shape="752.54,379.56 758.83,378.34 758.83,376.02 759.22,375.12 759.87,374.41 760.79,373.87 761.96,373.51 761.31,370.38 759.17,370.62 757.36,370.40 755.87,369.70 754.70,368.54 753.85,366.91 753.32,364.81 750.16,365.31 749.99,367.65 749.48,368.60 748.67,369.40 747.58,370.05 746.19,370.56 747.93,376.72 750.15,376.55 751.01,376.88 751.69,377.50 752.20,378.39">
+        <request index="0" response="000000000" foes="001001000" cont="0"/>
+        <request index="1" response="000000000" foes="111111000" cont="0"/>
+        <request index="2" response="000000000" foes="111111000" cont="0"/>
+        <request index="3" response="001000111" foes="001000111" cont="0"/>
+        <request index="4" response="011000110" foes="011000110" cont="0"/>
+        <request index="5" response="101000110" foes="101000110" cont="0"/>
+        <request index="6" response="000000111" foes="000111111" cont="0"/>
+        <request index="7" response="000000110" foes="000010110" cont="0"/>
+        <request index="8" response="000000110" foes="000100110" cont="0"/>
+    </junction>
+
+    <connection from="E3" to="h22" fromLane="0" toLane="0" via=":s4_3_0" tl="s4" linkIndex="3" dir="s" state="o"/>
+    <connection from="E3" to="E4" fromLane="0" toLane="0" via=":s4_4_0" tl="s4" linkIndex="4" dir="l" state="o"/>
+    <connection from="E3" to="E4" fromLane="0" toLane="1" via=":s4_4_1" tl="s4" linkIndex="5" dir="l" state="o"/>
+    <connection from="E3" to="h22" fromLane="1" toLane="0" via=":s4_6_0" tl="s4" linkIndex="6" dir="s" state="o"/>
+    <connection from="E3" to="E4" fromLane="1" toLane="0" via=":s4_7_0" tl="s4" linkIndex="7" dir="l" state="o"/>
+    <connection from="E3" to="E4" fromLane="1" toLane="1" via=":s4_7_1" tl="s4" linkIndex="8" dir="l" state="o"/>
+    <connection from="v21" to="h22" fromLane="0" toLane="0" via=":s4_0_0" tl="s4" linkIndex="0" dir="r" state="O"/>
+    <connection from="v21" to="E4" fromLane="0" toLane="0" via=":s4_1_0" tl="s4" linkIndex="1" dir="s" state="O"/>
+    <connection from="v21" to="E4" fromLane="0" toLane="1" via=":s4_1_1" tl="s4" linkIndex="2" dir="s" state="O"/>
+
+    <connection from=":s4_0" to="h22" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":s4_1" to="E4" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":s4_1" to="E4" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from=":s4_3" to="h22" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":s4_4" to="E4" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":s4_4" to="E4" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from=":s4_6" to="h22" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":s4_7" to="E4" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":s4_7" to="E4" fromLane="1" toLane="1" dir="l" state="M"/>
+
+</net>

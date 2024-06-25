@@ -1,0 +1,6 @@
+<routes>
+    <flow id="t_0" begin="0.00" fromJunction="524356247" toJunction="2496228905" end="100000.00" period="10.00"/>
+    <flow id="t_1" begin="0.00" fromJunction="2496347198" toJunction="7969156422" end="100000.00" period="10.00"/>
+    <flow id="t_2" begin="0.00" fromJunction="525278461" toJunction="524356232" end="100000.00" period="10.00"/>
+    <flow id="t_3" begin="0.00" fromJunction="2496228911" toJunction="7972079261" end="100000.00" period="10.00"/>
+</routes>
