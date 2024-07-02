@@ -28,7 +28,7 @@ else:
 
 # Constantes
 USE_GUI = False
-NUM_SECONDS = 86400
+NUM_SECONDS = 100
 MIN_GREEN = 9
 DELTA_TIME = 5
 REWARD_FN = "diff-waiting-time"
