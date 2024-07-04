@@ -73,7 +73,7 @@ class RLServerStrategy(FaultTolerantFedAvg):
         df_aggregated['Q-tables'] = df_aggregated['Q-tables'].apply(lambda x: eval(x))
     
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        df_aggregated.to_csv(f"SERVER/aggregated_results_{timestamp}.csv", index=False)
+        df_aggregated.to_csv(f"ServerData/aggregated_results_{timestamp}.csv", index=False)
     
         # Combinar todos los parámetros en una sola lista
         aggregated_parameters = [
@@ -158,6 +158,6 @@ class RLServerStrategy(FaultTolerantFedAvg):
 fl.server.start_server(
     server_address="localhost:8080",
     strategy=RLServerStrategy(),
-    config=fl.server.ServerConfig(num_rounds=2),
+    config=fl.server.ServerConfig(num_rounds=80),
 )
 

@@ -19,7 +19,7 @@ from sumo_rl import SumoEnvironment
 from sumo_rl.exploration import EpsilonGreedy
 from sumo_rl.agents import QLAgent as BaseQLAgent
 
-os.environ['SUMO_HOME'] = '/home/david/sumo-git/'
+os.environ['SUMO_HOME'] = '/usr/bin/sumo/'
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -29,7 +29,7 @@ else:
 
 # Constantes
 USE_GUI = False
-NUM_SECONDS = 1000
+NUM_SECONDS = 3500
 MIN_GREEN = 9
 DELTA_TIME = 5
 REWARD_FN = "diff-waiting-time"
@@ -65,8 +65,8 @@ class RLClient(fl.client.NumPyClient):
         while self.env is None:
             try:
                 self.env = SumoEnvironment(
-                    net_file=f'/home/david/Sumo/sumo-rl/nets/cuenca/cliente{self.client_id}.net.xml',
-                    route_file=f'/home/david/Sumo/sumo-rl/nets/cuenca/cliente{self.client_id}.rou.xml',
+                    net_file=f'nets/cliente{self.client_id}.net.xml',
+                    route_file=f'nets/cliente{self.client_id}.rou.xml',
                     use_gui=USE_GUI,
                     num_seconds=NUM_SECONDS,
                     min_green=MIN_GREEN,
@@ -166,7 +166,7 @@ class RLClient(fl.client.NumPyClient):
                 action_space=self.env.action_space,
                 alpha=self.alpha,
                 gamma=self.gamma,
-                exploration_strategy=EpsilonGreedy(initial_epsilon=0.05, min_epsilon=0.005, decay=self.decay),
+                exploration_strategy=EpsilonGreedy(initial_epsilon=0.009, min_epsilon=0.005, decay=self.decay),
                 enable_logging=self.enable_logging,
                 q_table={k: np.array(v) for k, v in saved_state.get(ts).get('q_table').items()} if parameters else {},
                 acc_reward=saved_state.get(ts).get('acc_reward') if parameters else 0.0,
@@ -210,7 +210,7 @@ class RLClient(fl.client.NumPyClient):
                 self.fit_rewards.append({'Steps': steps, 'Total Reward': sum(r.values()), **r})
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self.env.save_csv(f"WT/FIT_{episode}_client_{self.client_id}_{timestamp}.csv", episode)
+            self.env.save_csv(f"WaitTime/FIT_{episode}_client_{self.client_id}_{timestamp}.csv", episode)
 
             episode_q_table_sizes = {ts: self.get_q_table_size(self.ql_agents[ts]) for ts in self.ql_agents.keys()}
             q_table_sizes.append(episode_q_table_sizes)
@@ -273,7 +273,7 @@ class RLClient(fl.client.NumPyClient):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"arrays_client_{self.client_id}_{timestamp}"
         df = pd.DataFrame.from_dict(aggregated_data, orient='index').transpose()
-        df.to_csv(f"ARRAYS/{filename}.csv", index=False)
+        df.to_csv(f"ClientsArrays/{filename}.csv", index=False)
         
         
         # diccionarios_df = pd.DataFrame(diccionarios)
@@ -285,8 +285,8 @@ class RLClient(fl.client.NumPyClient):
     
     def save_rewards_to_csv(self):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        evaluate_filename = f'REWARDS/evaluate_rewards_client_{self.client_id}_{timestamp}.csv'
-        fit_filename = f'REWARDS/fit_rewards_client_{self.client_id}_{timestamp}.csv'
+        evaluate_filename = f'Rewards/evaluate_rewards_client_{self.client_id}_{timestamp}.csv'
+        fit_filename = f'Rewards/fit_rewards_client_{self.client_id}_{timestamp}.csv'
 
         evaluate_rewards_df = pd.DataFrame(self.evaluate_rewards)
         evaluate_rewards_df.to_csv(evaluate_filename, index=False)
@@ -303,8 +303,8 @@ class RLClient(fl.client.NumPyClient):
         q_table_sizes = []
 
         self.env = SumoEnvironment(
-            net_file=f'/home/david/Sumo/sumo-rl/nets/cuenca/mapa0.net.xml',
-            route_file=f'/home/david/Sumo/sumo-rl/nets/cuenca/mapa0.rou.xml',
+            net_file=f'nets/mapa0.net.xml',
+            route_file=f'nets/mapa0.rou.xml',
             use_gui=USE_GUI,
             num_seconds=NUM_SECONDS,
             min_green=MIN_GREEN,
@@ -323,7 +323,7 @@ class RLClient(fl.client.NumPyClient):
                     action_space=self.env.action_space,
                     alpha=self.alpha,
                     gamma=self.gamma,
-                    exploration_strategy=EpsilonGreedy(initial_epsilon=0.05, min_epsilon=0.005, decay=0.99),
+                    exploration_strategy=EpsilonGreedy(initial_epsilon=0.9, min_epsilon=0.1, decay=0.99),
                     enable_logging=self.enable_logging,
                     q_table={k: np.array(v) for k, v in saved_state.get(ts).get('q_table').items()},
                     acc_reward=saved_state.get(ts).get('acc_reward'),
@@ -356,7 +356,7 @@ class RLClient(fl.client.NumPyClient):
 
                     self.evaluate_rewards.append({'Steps': steps, 'Total Reward': sum(r.values()), **r})
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                csv_filename = f"WT/EVAL_{episode}_client_{self.client_id}_{timestamp}.csv"
+                csv_filename = f"WaitTime/EVAL_{episode}_client_{self.client_id}_{timestamp}.csv"
                 self.env.save_csv(csv_filename, episode)
 
         eval_df = pd.read_csv(csv_filename)
@@ -385,7 +385,7 @@ if __name__ == "__main__":
         client_id = args.client_id
 
     client = RLClient(client_id)
-    fl.common.logger.configure(identifier=f"myFlowerExperiment_{client_id}", filename=f"log_{client_id}.txt")
+    #fl.common.logger.configure(identifier=f"myFlowerExperiment_{client_id}", filename=f"log_{client_id}.txt")
     fl.client.start_client(server_address="localhost:8080", client=client)
     client.save_rewards_to_csv()
 
