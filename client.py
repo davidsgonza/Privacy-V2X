@@ -10,6 +10,7 @@ import csv
 import pandas as pd
 from datetime import datetime
 from flwr.common import parameters_to_ndarrays, ndarrays_to_parameters, Status, Code, EvaluateRes
+from typing import Dict, Union
 
 # Configurar matplotlib para usar el backend 'Agg'
 matplotlib.use('Agg')
@@ -28,7 +29,7 @@ else:
 
 # Constantes
 USE_GUI = False
-NUM_SECONDS = 100
+NUM_SECONDS = 1000
 MIN_GREEN = 9
 DELTA_TIME = 5
 REWARD_FN = "diff-waiting-time"
@@ -64,8 +65,8 @@ class RLClient(fl.client.NumPyClient):
         while self.env is None:
             try:
                 self.env = SumoEnvironment(
-                    net_file=f'nets/cliente{self.client_id}.net.xml',
-                    route_file=f'nets/cliente{self.client_id}.rou.xml',
+                    net_file=f'/home/david/Sumo/sumo-rl/nets/cuenca/cliente{self.client_id}.net.xml',
+                    route_file=f'/home/david/Sumo/sumo-rl/nets/cuenca/cliente{self.client_id}.rou.xml',
                     use_gui=USE_GUI,
                     num_seconds=NUM_SECONDS,
                     min_green=MIN_GREEN,
@@ -209,7 +210,7 @@ class RLClient(fl.client.NumPyClient):
                 self.fit_rewards.append({'Steps': steps, 'Total Reward': sum(r.values()), **r})
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self.env.save_csv(f"WaitTime/FIT_{episode}_client_{self.client_id}_{timestamp}.csv", episode)
+            self.env.save_csv(f"WT/FIT_{episode}_client_{self.client_id}_{timestamp}.csv", episode)
 
             episode_q_table_sizes = {ts: self.get_q_table_size(self.ql_agents[ts]) for ts in self.ql_agents.keys()}
             q_table_sizes.append(episode_q_table_sizes)
@@ -272,7 +273,7 @@ class RLClient(fl.client.NumPyClient):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"arrays_client_{self.client_id}_{timestamp}"
         df = pd.DataFrame.from_dict(aggregated_data, orient='index').transpose()
-        df.to_csv(f"ClientsArrays/{filename}.csv", index=False)
+        df.to_csv(f"ARRAYS/{filename}.csv", index=False)
         
         
         # diccionarios_df = pd.DataFrame(diccionarios)
@@ -284,8 +285,8 @@ class RLClient(fl.client.NumPyClient):
     
     def save_rewards_to_csv(self):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        evaluate_filename = f'Rewards/evaluate_rewards_client_{self.client_id}_{timestamp}.csv'
-        fit_filename = f'Rewards/fit_rewards_client_{self.client_id}_{timestamp}.csv'
+        evaluate_filename = f'REWARDS/evaluate_rewards_client_{self.client_id}_{timestamp}.csv'
+        fit_filename = f'REWARDS/fit_rewards_client_{self.client_id}_{timestamp}.csv'
 
         evaluate_rewards_df = pd.DataFrame(self.evaluate_rewards)
         evaluate_rewards_df.to_csv(evaluate_filename, index=False)
@@ -355,15 +356,24 @@ class RLClient(fl.client.NumPyClient):
 
                     self.evaluate_rewards.append({'Steps': steps, 'Total Reward': sum(r.values()), **r})
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                csv_filename = f"WaitTime/EVAL_{episode}_client_{self.client_id}_{timestamp}.csv"
+                csv_filename = f"WT/EVAL_{episode}_client_{self.client_id}_{timestamp}.csv"
                 self.env.save_csv(csv_filename, episode)
 
         eval_df = pd.read_csv(csv_filename)
         avg_waiting_time = eval_df['system_total_waiting_time'].mean()
+        avg_CO2_emissions = eval_df['system_total_C02_emissions'].mean()
+        
         num_examples = len(rewards)
         loss = 0.0
-
-        return loss, num_examples, {"average_waiting_time": float(avg_waiting_time)}
+        Scalar = Union[int, float]
+        # Creamos los diccionarios con valores de tipo Scalar
+        metrics_WT: Dict[str, Scalar] = {"average_waiting_time": float(avg_waiting_time)}
+        metrics_CO2: Dict[str, Scalar] = {"average_CO2_emissions": float(avg_CO2_emissions)}
+        
+        # Combinamos los diccionarios
+        combined_metrics: Dict[str, Scalar] = {**metrics_WT, **metrics_CO2}
+        
+        return loss, num_examples, combined_metrics
 
 if __name__ == "__main__":
     if 'spyder' in sys.modules:
@@ -375,7 +385,7 @@ if __name__ == "__main__":
         client_id = args.client_id
 
     client = RLClient(client_id)
-    #fl.common.logger.configure(identifier=f"myFlowerExperiment_{client_id}", filename=f"log_{client_id}.txt")
+    fl.common.logger.configure(identifier=f"myFlowerExperiment_{client_id}", filename=f"log_{client_id}.txt")
     fl.client.start_client(server_address="localhost:8080", client=client)
     client.save_rewards_to_csv()
 

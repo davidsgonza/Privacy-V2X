@@ -73,7 +73,7 @@ class RLServerStrategy(FaultTolerantFedAvg):
         df_aggregated['Q-tables'] = df_aggregated['Q-tables'].apply(lambda x: eval(x))
     
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        df_aggregated.to_csv(f"ServerData/aggregated_results_{timestamp}.csv", index=False)
+        df_aggregated.to_csv(f"SERVER/aggregated_results_{timestamp}.csv", index=False)
     
         # Combinar todos los parámetros en una sola lista
         aggregated_parameters = [
@@ -118,10 +118,12 @@ class RLServerStrategy(FaultTolerantFedAvg):
         total_loss = 0.0
         total_examples = 0
         total_waiting_time = 0.0
+        total_CO2_emissions = 0.0
 
         # Print results for debugging
         print(f"Results received in aggregate_evaluate: {results}")
 
+        
         for client_proxy, evaluate_res in results:
             # Print individual result for debugging
             print(f"Individual result: {evaluate_res}")
@@ -129,19 +131,26 @@ class RLServerStrategy(FaultTolerantFedAvg):
             loss = evaluate_res.loss
             num_examples = evaluate_res.num_examples
             metrics = evaluate_res.metrics
-
+            
             total_loss += loss * num_examples
             total_examples += num_examples
 
             waiting_time = metrics.get("average_waiting_time", 0.0)
             total_waiting_time += waiting_time * num_examples
+            
+            CO2_emissions = metrics.get("average_CO2_emissions", 0.0)
+            total_CO2_emissions += CO2_emissions * num_examples
+
 
         if total_examples == 0:
             return None
 
         aggregated_loss = total_loss / total_examples
         aggregated_waiting_time = total_waiting_time / total_examples
-        aggregated_metrics = {"average_waiting_time": aggregated_waiting_time}
+        aggregated_CO2_emissions = total_CO2_emissions / total_examples
+        aggregated_metrics_WT = {"average_waiting_time": aggregated_waiting_time}
+        aggregated_metrics_CO2 = {"average_CO2_emissions": aggregated_CO2_emissions}
+        aggregated_metrics = {**aggregated_metrics_WT, **aggregated_metrics_CO2}
 
         return aggregated_loss, aggregated_metrics
 
