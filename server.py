@@ -4,6 +4,7 @@ import numpy as np
 from flwr.common import parameters_to_ndarrays, ndarrays_to_parameters, FitRes
 import pandas as pd
 from datetime import datetime
+from flwr.server.history import History
 
 # Función de agregación para las métricas de ajuste (fit)
 def fit_metrics_aggregation_fn(metrics):
@@ -23,6 +24,7 @@ class RLServerStrategy(FaultTolerantFedAvg):
     def __init__(self):
         super().__init__(fit_metrics_aggregation_fn=fit_metrics_aggregation_fn,
                          evaluate_metrics_aggregation_fn=evaluate_metrics_aggregation_fn)
+        self.history = History()
 
     def configure_fit(self, server_round, parameters, client_manager):
         return super().configure_fit(server_round, parameters, client_manager)
@@ -73,7 +75,7 @@ class RLServerStrategy(FaultTolerantFedAvg):
         df_aggregated['Q-tables'] = df_aggregated['Q-tables'].apply(lambda x: eval(x))
     
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        df_aggregated.to_csv(f"ServerData/aggregated_results_{timestamp}.csv", index=False)
+        df_aggregated.to_csv(f"SERVER/aggregated_results_{timestamp}.csv", index=False)
     
         # Combinar todos los parámetros en una sola lista
         aggregated_parameters = [
@@ -82,14 +84,19 @@ class RLServerStrategy(FaultTolerantFedAvg):
             np.array(df_aggregated['Actions'].tolist())
         ]
     
-        # Convertir los parámetros agregados a ndarrays si es necesario
-        #aggregated_parameters_ndarrays = ndarrays_to_parameters(aggregated_parameters)
+        # Convertir los parámetros agregados a ndarrays
+        aggregated_parameters_ndarrays = ndarrays_to_parameters(aggregated_parameters)
     
         # Calcular métricas agregadas (ejemplo: recompensa media)
         metrics_aggregated = {"mean_reward": np.mean([fit_res.metrics["reward"] for _, fit_res in results])}
-    
-        return ndarrays_to_parameters(aggregated_parameters), metrics_aggregated
+        
+        # Añadir pérdidas y métricas al historial
+        self.history.add_loss_distributed(server_round, metrics_aggregated["mean_reward"])
+        self.history.add_metrics_distributed_fit(server_round, metrics_aggregated)
 
+        return aggregated_parameters_ndarrays, metrics_aggregated
+        
+        
     def concatenate_q_tables(self, q_tables_list):
         if not q_tables_list:
             raise ValueError("No Q-tables to aggregate.")
@@ -152,12 +159,46 @@ class RLServerStrategy(FaultTolerantFedAvg):
         aggregated_metrics_CO2 = {"average_CO2_emissions": aggregated_CO2_emissions}
         aggregated_metrics = {**aggregated_metrics_WT, **aggregated_metrics_CO2}
 
+        # Añadir pérdidas y métricas al historial
+        self.history.add_loss_centralized(server_round, aggregated_loss)
+        self.history.add_metrics_centralized(server_round, aggregated_metrics)
+
         return aggregated_loss, aggregated_metrics
+
+    def save_history(self, file_path: str) -> None:
+        """Save the history to a single CSV file."""
+        # Convert history data to DataFrames
+        df_losses_distributed = pd.DataFrame(self.history.losses_distributed, columns=['Round', 'Distributed Loss'])
+        df_losses_centralized = pd.DataFrame(self.history.losses_centralized, columns=['Round', 'Centralized Loss'])
+        
+        # Convert metrics dictionaries to DataFrames and add Round column
+        df_metrics_distributed_fit = pd.DataFrame([(round_, key, value) for key, values in self.history.metrics_distributed_fit.items() for round_, value in values], columns=['Round', 'Metric', 'Value']).pivot(index='Round', columns='Metric', values='Value').reset_index()
+        df_metrics_distributed = pd.DataFrame([(round_, key, value) for key, values in self.history.metrics_distributed.items() for round_, value in values], columns=['Round', 'Metric', 'Value']).pivot(index='Round', columns='Metric', values='Value').reset_index()
+        df_metrics_centralized = pd.DataFrame([(round_, key, value) for key, values in self.history.metrics_centralized.items() for round_, value in values], columns=['Round', 'Metric', 'Value']).pivot(index='Round', columns='Metric', values='Value').reset_index()
+        
+        # Merge all DataFrames on the 'Round' column
+        df_combined = df_losses_distributed.merge(df_losses_centralized, on='Round', how='outer')
+        df_combined = df_combined.merge(df_metrics_distributed_fit, on='Round', how='outer')
+        df_combined = df_combined.merge(df_metrics_distributed, on='Round', how='outer')
+        df_combined = df_combined.merge(df_metrics_centralized, on='Round', how='outer')
+        
+        # Save to a single CSV file
+        df_combined.to_csv(file_path, index=False)
+
+
+# Create the FedAvg strategy
+strategy = RLServerStrategy()
 
 # Inicia el servidor de Flower con la estrategia personalizada
 fl.server.start_server(
     server_address="localhost:8080",
-    strategy=RLServerStrategy(),
-    config=fl.server.ServerConfig(num_rounds=80),
+    strategy=strategy,
+    config=fl.server.ServerConfig(num_rounds=2),
 )
+
+# Define the file path for saving the history
+file_path = 'ServerHistory/history.csv'
+
+# Save the history after training
+strategy.save_history(file_path)
 
