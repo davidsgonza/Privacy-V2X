@@ -75,7 +75,7 @@ class RLServerStrategy(FaultTolerantFedAvg):
         df_aggregated['Q-tables'] = df_aggregated['Q-tables'].apply(lambda x: eval(x))
     
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        df_aggregated.to_csv(f"SERVER/aggregated_results_{timestamp}.csv", index=False)
+        #df_aggregated.to_csv(f"ServerData/aggregated_results_{timestamp}.csv", index=False)
     
         # Combinar todos los parámetros en una sola lista
         aggregated_parameters = [
@@ -196,8 +196,9 @@ fl.server.start_server(
     config=fl.server.ServerConfig(num_rounds=2),
 )
 
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 # Define the file path for saving the history
-file_path = 'ServerHistory/history.csv'
+file_path = f"ServerHistory/history_{timestamp}.csv"
 
 # Save the history after training
 strategy.save_history(file_path)
