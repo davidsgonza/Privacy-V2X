@@ -1,5 +1,5 @@
 # Privacy-V2X
-Explore privacy-preserving distributed learning in traffic simulations using Python, TraCI-SUMO, sumo-rl and Flower Framework. Implement and analyze privacy-enhancing techniques for secure, real-time interaction.
+Explore privacy-preserving distributed learning in traffic simulations using Python, TraCI-SUMO, [sumo-rl] (https://github.com/LucasAlegre/sumo-rl) and [Flower Framework] (https://github.com/adap/flower). Implement and analyze privacy-enhancing techniques for secure, real-time interaction.
 
 ## Q-learning
 
@@ -22,10 +22,20 @@ The objective is to federate the proposed scenario, where each traffic light is 
 
 ![Clients](images/clients.png)
 
-The simulation configuration is done in `client.py` and `server.py`. To run the simulation, start the server with the following command:
+The simulation configuration is done in `client.py` and `server.py`. The client and server code allows the Q-tables of the clients to be shared with the server, which averages the actions for similar states. The code leverages the Flower Framework. To run the simulation, start the server with the following command:
 
 ```bash
 python3 server.py
 ```
 
 Clients can be executed with `run_clients.sh`, or if you want to assign a specific number of cores to each client, use `run_clients_parallel.sh`.
+
+
+
+A reduction in waiting time and CO2 emissions is achieved as the federated rounds progress.
+
+![FL Graph](images/FL_graph.png)
+
+`client_dp.py` allows the use of `LocalDpMod` to perform accuracy tests with different epsilon values.
+
+![Accuracy](images/accuracy.png)
