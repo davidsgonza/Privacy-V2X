@@ -37,5 +37,6 @@ A reduction in waiting time and CO2 emissions is achieved as the federated round
 ![FL Graph](images/FL_graph.png)
 
 `client_dp.py` allows the use of `LocalDpMod` to perform accuracy tests with different epsilon values.
+
 <img src="images/accuracy.png" alt="Accuracy" width="400"/>
 
