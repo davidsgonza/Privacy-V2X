@@ -1,5 +1,5 @@
 # Privacy-V2X
-Explore privacy-preserving distributed learning in traffic simulations using Python, TraCI-SUMO, [sumo-rl] (https://github.com/LucasAlegre/sumo-rl) and [Flower Framework] (https://github.com/adap/flower). Implement and analyze privacy-enhancing techniques for secure, real-time interaction.
+Explore privacy-preserving distributed learning in traffic simulations using Python, TraCI-SUMO, [sumo-rl](https://github.com/LucasAlegre/sumo-rl) and [Flower Framework](https://github.com/adap/flower). Implement and analyze privacy-enhancing techniques for secure, real-time interaction.
 
 ## Q-learning
 
@@ -37,5 +37,5 @@ A reduction in waiting time and CO2 emissions is achieved as the federated round
 ![FL Graph](images/FL_graph.png)
 
 `client_dp.py` allows the use of `LocalDpMod` to perform accuracy tests with different epsilon values.
+<img src="images/accuracy.png" alt="Accuracy" width="400"/>
 
-![Accuracy](images/accuracy.png)
