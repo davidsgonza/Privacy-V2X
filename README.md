@@ -4,8 +4,7 @@ Explore privacy-preserving distributed learning in traffic simulations using Pyt
 ## Q-learning
 
 This project is based on the sumo-rl framework. The scenario features a SUMO map with four intersections, each controlled by a traffic light. Since it’s a one-way street with no turns, there are only two phases.
-
-![Map](images/map.png)
+<img src="images/map.png" alt="Map" width="300"/>
 
 The simulation is executed by running `ql.py`:
 
